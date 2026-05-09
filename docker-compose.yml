@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: smartcollab-postgres
+    environment:
+      POSTGRES_DB: smartcollab_db
+      POSTGRES_USER: smartcollab_user
+      POSTGRES_PASSWORD: smartcollab_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - smartcollab_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  smartcollab_postgres_data:
