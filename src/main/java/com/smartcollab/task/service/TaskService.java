@@ -5,6 +5,8 @@ import com.smartcollab.task.model.Task;
 import com.smartcollab.task.repository.TaskRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class TaskService {
 
@@ -22,5 +24,9 @@ public class TaskService {
         task.setDescription(request.getDescription());
 
         return taskRepository.save(task);
+    }
+
+    public List<Task> getAllTasks() {
+        return taskRepository.findAll();
     }
 }
