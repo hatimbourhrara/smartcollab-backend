@@ -3,6 +3,7 @@ package com.smartcollab.task.service;
 import com.smartcollab.common.exception.ResourceNotFoundException;
 import com.smartcollab.task.dto.CreateTaskRequest;
 import com.smartcollab.task.dto.UpdateTaskRequest;
+import com.smartcollab.task.dto.UpdateTaskStatusRequest;
 import com.smartcollab.task.model.Task;
 import com.smartcollab.task.repository.TaskRepository;
 import org.springframework.stereotype.Service;
@@ -19,7 +20,6 @@ public class TaskService {
     }
 
     public Task createTask(CreateTaskRequest request) {
-
         Task task = new Task();
 
         task.setTitle(request.getTitle());
@@ -40,11 +40,11 @@ public class TaskService {
     }
 
     public void deleteTask(Long id) {
-        taskRepository.deleteById(id);
+        Task task = getTaskById(id);
+        taskRepository.delete(task);
     }
 
     public Task updateTask(Long id, UpdateTaskRequest request) {
-
         Task task = getTaskById(id);
 
         if (request.getTitle() != null) {
@@ -54,6 +54,14 @@ public class TaskService {
         if (request.getDescription() != null) {
             task.setDescription(request.getDescription());
         }
+
+        return taskRepository.save(task);
+    }
+
+    public Task updateTaskStatus(Long id, UpdateTaskStatusRequest request) {
+        Task task = getTaskById(id);
+
+        task.setStatus(request.getStatus());
 
         return taskRepository.save(task);
     }
