@@ -1,6 +1,7 @@
 package com.smartcollab.task.service;
 
 import com.smartcollab.task.dto.CreateTaskRequest;
+import com.smartcollab.task.dto.UpdateTaskRequest;
 import com.smartcollab.task.model.Task;
 import com.smartcollab.task.repository.TaskRepository;
 import org.springframework.stereotype.Service;
@@ -37,5 +38,19 @@ public class TaskService {
 
     public void deleteTask(Long id) {
         taskRepository.deleteById(id);
+    }
+
+    public Task updateTask(Long id, UpdateTaskRequest request) {
+        Task task = getTaskById(id);
+
+        if (request.getTitle() != null) {
+            task.setTitle(request.getTitle());
+        }
+
+        if (request.getDescription() != null) {
+            task.setDescription(request.getDescription());
+        }
+
+        return taskRepository.save(task);
     }
 }
