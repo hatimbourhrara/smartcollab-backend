@@ -1,5 +1,6 @@
 package com.smartcollab.task.service;
 
+import com.smartcollab.common.exception.ResourceNotFoundException;
 import com.smartcollab.task.dto.CreateTaskRequest;
 import com.smartcollab.task.dto.UpdateTaskRequest;
 import com.smartcollab.task.model.Task;
@@ -33,7 +34,9 @@ public class TaskService {
 
     public Task getTaskById(Long id) {
         return taskRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Task not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Task not found")
+                );
     }
 
     public void deleteTask(Long id) {
