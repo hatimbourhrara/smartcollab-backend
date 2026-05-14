@@ -41,6 +41,7 @@ public class TaskService {
     }
 
     public Task updateTask(Long id, UpdateTaskRequest request) {
+
         Task task = getTaskById(id);
 
         if (request.getTitle() != null) {

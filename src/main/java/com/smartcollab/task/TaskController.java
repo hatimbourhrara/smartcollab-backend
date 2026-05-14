@@ -1,6 +1,7 @@
 package com.smartcollab.task;
 
 import com.smartcollab.task.dto.CreateTaskRequest;
+import com.smartcollab.task.dto.UpdateTaskRequest;
 import com.smartcollab.task.model.Task;
 import com.smartcollab.task.service.TaskService;
 import jakarta.validation.Valid;
@@ -36,5 +37,13 @@ public class TaskController {
     @DeleteMapping("/{id}")
     public void deleteTask(@PathVariable Long id) {
         taskService.deleteTask(id);
+    }
+
+    @PutMapping("/{id}")
+    public Task updateTask(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateTaskRequest request
+    ) {
+        return taskService.updateTask(id, request);
     }
 }
