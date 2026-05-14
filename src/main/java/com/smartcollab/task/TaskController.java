@@ -2,6 +2,7 @@ package com.smartcollab.task;
 
 import com.smartcollab.task.dto.CreateTaskRequest;
 import com.smartcollab.task.dto.UpdateTaskRequest;
+import com.smartcollab.task.dto.UpdateTaskStatusRequest;
 import com.smartcollab.task.model.Task;
 import com.smartcollab.task.service.TaskService;
 import jakarta.validation.Valid;
@@ -45,5 +46,13 @@ public class TaskController {
             @Valid @RequestBody UpdateTaskRequest request
     ) {
         return taskService.updateTask(id, request);
+    }
+
+    @PatchMapping("/{id}/status")
+    public Task updateTaskStatus(
+            @PathVariable Long id,
+            @RequestBody UpdateTaskStatusRequest request
+    ) {
+        return taskService.updateTaskStatus(id, request);
     }
 }
