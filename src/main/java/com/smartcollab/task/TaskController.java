@@ -4,6 +4,7 @@ import com.smartcollab.task.dto.CreateTaskRequest;
 import com.smartcollab.task.dto.UpdateTaskRequest;
 import com.smartcollab.task.dto.UpdateTaskStatusRequest;
 import com.smartcollab.task.model.Task;
+import com.smartcollab.task.model.TaskStatus;
 import com.smartcollab.task.service.TaskService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +29,11 @@ public class TaskController {
     @GetMapping
     public List<Task> getAllTasks() {
         return taskService.getAllTasks();
+    }
+
+    @GetMapping("/status/{status}")
+    public List<Task> getTasksByStatus(@PathVariable TaskStatus status) {
+        return taskService.getTasksByStatus(status);
     }
 
     @GetMapping("/{id}")
