@@ -5,6 +5,7 @@ import com.smartcollab.task.dto.CreateTaskRequest;
 import com.smartcollab.task.dto.UpdateTaskRequest;
 import com.smartcollab.task.dto.UpdateTaskStatusRequest;
 import com.smartcollab.task.model.Task;
+import com.smartcollab.task.model.TaskStatus;
 import com.smartcollab.task.repository.TaskRepository;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +31,10 @@ public class TaskService {
 
     public List<Task> getAllTasks() {
         return taskRepository.findAll();
+    }
+
+    public List<Task> getTasksByStatus(TaskStatus status) {
+        return taskRepository.findByStatus(status);
     }
 
     public Task getTaskById(Long id) {
