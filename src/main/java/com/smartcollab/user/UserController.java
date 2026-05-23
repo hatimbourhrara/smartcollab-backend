@@ -1,6 +1,8 @@
 package com.smartcollab.user;
 
+import com.smartcollab.security.JwtService;
 import com.smartcollab.user.dto.LoginRequest;
+import com.smartcollab.user.dto.LoginResponse;
 import com.smartcollab.user.dto.RegisterRequest;
 import com.smartcollab.user.dto.UserResponse;
 import com.smartcollab.user.model.User;
@@ -13,9 +15,14 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
+    private final JwtService jwtService;
 
-    public UserController(UserService userService) {
+    public UserController(
+            UserService userService,
+            JwtService jwtService
+    ) {
         this.userService = userService;
+        this.jwtService = jwtService;
     }
 
     @PostMapping("/register")
@@ -25,8 +32,10 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public UserResponse login(@Valid @RequestBody LoginRequest request) {
+    public LoginResponse login(@Valid @RequestBody LoginRequest request) {
         User user = userService.login(request);
-        return new UserResponse(user);
+        String token = jwtService.generateToken(user.getEmail());
+
+        return new LoginResponse(token);
     }
 }
