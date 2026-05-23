@@ -1,5 +1,6 @@
 package com.smartcollab.security;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.stereotype.Service;
@@ -25,5 +26,21 @@ public class JwtService {
                         SECRET_KEY
                 )
                 .compact();
+    }
+
+    public String extractEmail(String token) {
+        return extractClaims(token).getSubject();
+    }
+
+    public boolean isTokenValid(String token) {
+        Date expiration = extractClaims(token).getExpiration();
+        return expiration.after(new Date());
+    }
+
+    private Claims extractClaims(String token) {
+        return Jwts.parser()
+                .setSigningKey(SECRET_KEY)
+                .parseClaimsJws(token)
+                .getBody();
     }
 }
