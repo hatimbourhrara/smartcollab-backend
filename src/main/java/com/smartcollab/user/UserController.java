@@ -2,6 +2,7 @@ package com.smartcollab.user;
 
 import com.smartcollab.user.dto.LoginRequest;
 import com.smartcollab.user.dto.RegisterRequest;
+import com.smartcollab.user.dto.UserResponse;
 import com.smartcollab.user.model.User;
 import com.smartcollab.user.service.UserService;
 import jakarta.validation.Valid;
@@ -18,12 +19,14 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public User register(@Valid @RequestBody RegisterRequest request) {
-        return userService.register(request);
+    public UserResponse register(@Valid @RequestBody RegisterRequest request) {
+        User user = userService.register(request);
+        return new UserResponse(user);
     }
 
     @PostMapping("/login")
-    public User login(@Valid @RequestBody LoginRequest request) {
-        return userService.login(request);
+    public UserResponse login(@Valid @RequestBody LoginRequest request) {
+        User user = userService.login(request);
+        return new UserResponse(user);
     }
 }
