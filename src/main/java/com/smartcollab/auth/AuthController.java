@@ -27,12 +27,15 @@ public class AuthController {
 
     @PostMapping("/register")
     public UserResponse register(@Valid @RequestBody RegisterRequest request) {
+
         User user = userService.register(request);
+
         return new UserResponse(user);
     }
 
     @PostMapping("/login")
     public LoginResponse login(@Valid @RequestBody LoginRequest request) {
+
         User user = userService.login(request);
 
         String token = jwtService.generateToken(user.getEmail());
@@ -44,6 +47,7 @@ public class AuthController {
     public String validateToken(
             @RequestHeader("Authorization") String authHeader
     ) {
+
         String token = authHeader.replace("Bearer ", "");
 
         boolean valid = jwtService.isTokenValid(token);
@@ -51,6 +55,16 @@ public class AuthController {
         if (!valid) {
             return "Invalid token";
         }
+
+        return jwtService.extractEmail(token);
+    }
+
+    @GetMapping("/me")
+    public String currentUser(
+            @RequestHeader("Authorization") String authHeader
+    ) {
+
+        String token = authHeader.replace("Bearer ", "");
 
         return jwtService.extractEmail(token);
     }
