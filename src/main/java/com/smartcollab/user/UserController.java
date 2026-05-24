@@ -34,8 +34,25 @@ public class UserController {
     @PostMapping("/login")
     public LoginResponse login(@Valid @RequestBody LoginRequest request) {
         User user = userService.login(request);
+
         String token = jwtService.generateToken(user.getEmail());
 
         return new LoginResponse(token);
+    }
+
+    @GetMapping("/validate")
+    public String validateToken(
+            @RequestHeader("Authorization") String authHeader
+    ) {
+
+        String token = authHeader.replace("Bearer ", "");
+
+        boolean valid = jwtService.isTokenValid(token);
+
+        if (!valid) {
+            return "Invalid token";
+        }
+
+        return jwtService.extractEmail(token);
     }
 }
