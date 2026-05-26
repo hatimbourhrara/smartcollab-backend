@@ -23,6 +23,7 @@ public class UserService {
     }
 
     public User register(RegisterRequest request) {
+
         User user = User.builder()
                 .username(request.getUsername())
                 .email(request.getEmail())
@@ -33,8 +34,11 @@ public class UserService {
     }
 
     public User login(LoginRequest request) {
+
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("User not found")
+                );
 
         boolean passwordMatches = passwordEncoder.matches(
                 request.getPassword(),
@@ -46,5 +50,13 @@ public class UserService {
         }
 
         return user;
+    }
+
+    public User getUserByEmail(String email) {
+
+        return userRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("User not found")
+                );
     }
 }
