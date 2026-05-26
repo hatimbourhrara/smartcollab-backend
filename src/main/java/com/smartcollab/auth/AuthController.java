@@ -60,12 +60,16 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public String currentUser(
+    public UserResponse currentUser(
             @RequestHeader("Authorization") String authHeader
     ) {
 
         String token = authHeader.replace("Bearer ", "");
 
-        return jwtService.extractEmail(token);
+        String email = jwtService.extractEmail(token);
+
+        User user = userService.getUserByEmail(email);
+
+        return new UserResponse(user);
     }
 }
