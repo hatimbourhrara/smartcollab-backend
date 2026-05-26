@@ -1,5 +1,6 @@
 package com.smartcollab.task;
 
+import com.smartcollab.security.JwtService;
 import com.smartcollab.task.dto.CreateTaskRequest;
 import com.smartcollab.task.dto.UpdateTaskRequest;
 import com.smartcollab.task.dto.UpdateTaskStatusRequest;
@@ -16,14 +17,25 @@ import java.util.List;
 public class TaskController {
 
     private final TaskService taskService;
+    private final JwtService jwtService;
 
-    public TaskController(TaskService taskService) {
+    public TaskController(
+            TaskService taskService,
+            JwtService jwtService
+    ) {
         this.taskService = taskService;
+        this.jwtService = jwtService;
     }
 
     @PostMapping
-    public Task createTask(@Valid @RequestBody CreateTaskRequest request) {
-        return taskService.createTask(request);
+    public Task createTask(
+            @Valid @RequestBody CreateTaskRequest request,
+            @RequestHeader("Authorization") String authHeader
+    ) {
+        String token = authHeader.replace("Bearer ", "");
+        String userEmail = jwtService.extractEmail(token);
+
+        return taskService.createTask(request, userEmail);
     }
 
     @GetMapping
