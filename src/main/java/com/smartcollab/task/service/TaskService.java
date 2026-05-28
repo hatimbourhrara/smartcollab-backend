@@ -20,11 +20,13 @@ public class TaskService {
         this.taskRepository = taskRepository;
     }
 
-    public Task createTask(CreateTaskRequest request) {
+    public Task createTask(CreateTaskRequest request, String userEmail) {
+
         Task task = new Task();
 
         task.setTitle(request.getTitle());
         task.setDescription(request.getDescription());
+        task.setCreatedBy(userEmail);
 
         return taskRepository.save(task);
     }
@@ -37,6 +39,10 @@ public class TaskService {
         return taskRepository.findByStatus(status);
     }
 
+    public List<Task> getTasksByCreator(String userEmail) {
+        return taskRepository.findByCreatedBy(userEmail);
+    }
+
     public Task getTaskById(Long id) {
         return taskRepository.findById(id)
                 .orElseThrow(() ->
@@ -45,11 +51,14 @@ public class TaskService {
     }
 
     public void deleteTask(Long id) {
+
         Task task = getTaskById(id);
+
         taskRepository.delete(task);
     }
 
     public Task updateTask(Long id, UpdateTaskRequest request) {
+
         Task task = getTaskById(id);
 
         if (request.getTitle() != null) {
@@ -64,6 +73,7 @@ public class TaskService {
     }
 
     public Task updateTaskStatus(Long id, UpdateTaskStatusRequest request) {
+
         Task task = getTaskById(id);
 
         task.setStatus(request.getStatus());
