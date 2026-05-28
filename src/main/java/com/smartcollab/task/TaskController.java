@@ -32,7 +32,9 @@ public class TaskController {
             @Valid @RequestBody CreateTaskRequest request,
             @RequestHeader("Authorization") String authHeader
     ) {
+
         String token = authHeader.replace("Bearer ", "");
+
         String userEmail = jwtService.extractEmail(token);
 
         return taskService.createTask(request, userEmail);
@@ -41,6 +43,18 @@ public class TaskController {
     @GetMapping
     public List<Task> getAllTasks() {
         return taskService.getAllTasks();
+    }
+
+    @GetMapping("/my")
+    public List<Task> getMyTasks(
+            @RequestHeader("Authorization") String authHeader
+    ) {
+
+        String token = authHeader.replace("Bearer ", "");
+
+        String userEmail = jwtService.extractEmail(token);
+
+        return taskService.getTasksByCreator(userEmail);
     }
 
     @GetMapping("/status/{status}")
