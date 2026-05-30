@@ -32,7 +32,6 @@ public class TaskController {
             @Valid @RequestBody CreateTaskRequest request,
             @RequestHeader("Authorization") String authHeader
     ) {
-
         String token = authHeader.replace("Bearer ", "");
         String userEmail = jwtService.extractEmail(token);
 
@@ -48,7 +47,6 @@ public class TaskController {
     public List<Task> getMyTasks(
             @RequestHeader("Authorization") String authHeader
     ) {
-
         String token = authHeader.replace("Bearer ", "");
         String userEmail = jwtService.extractEmail(token);
 
@@ -61,8 +59,14 @@ public class TaskController {
     }
 
     @GetMapping("/{id}")
-    public Task getTaskById(@PathVariable Long id) {
-        return taskService.getTaskById(id);
+    public Task getTaskById(
+            @PathVariable Long id,
+            @RequestHeader("Authorization") String authHeader
+    ) {
+        String token = authHeader.replace("Bearer ", "");
+        String userEmail = jwtService.extractEmail(token);
+
+        return taskService.getUserTaskById(id, userEmail);
     }
 
     @DeleteMapping("/{id}")
@@ -70,7 +74,6 @@ public class TaskController {
             @PathVariable Long id,
             @RequestHeader("Authorization") String authHeader
     ) {
-
         String token = authHeader.replace("Bearer ", "");
         String userEmail = jwtService.extractEmail(token);
 
@@ -83,7 +86,6 @@ public class TaskController {
             @Valid @RequestBody UpdateTaskRequest request,
             @RequestHeader("Authorization") String authHeader
     ) {
-
         String token = authHeader.replace("Bearer ", "");
         String userEmail = jwtService.extractEmail(token);
 
@@ -96,7 +98,6 @@ public class TaskController {
             @Valid @RequestBody UpdateTaskStatusRequest request,
             @RequestHeader("Authorization") String authHeader
     ) {
-
         String token = authHeader.replace("Bearer ", "");
         String userEmail = jwtService.extractEmail(token);
 
