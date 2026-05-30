@@ -34,7 +34,6 @@ public class TaskController {
     ) {
 
         String token = authHeader.replace("Bearer ", "");
-
         String userEmail = jwtService.extractEmail(token);
 
         return taskService.createTask(request, userEmail);
@@ -51,7 +50,6 @@ public class TaskController {
     ) {
 
         String token = authHeader.replace("Bearer ", "");
-
         String userEmail = jwtService.extractEmail(token);
 
         return taskService.getTasksByCreator(userEmail);
@@ -68,23 +66,40 @@ public class TaskController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteTask(@PathVariable Long id) {
-        taskService.deleteTask(id);
+    public void deleteTask(
+            @PathVariable Long id,
+            @RequestHeader("Authorization") String authHeader
+    ) {
+
+        String token = authHeader.replace("Bearer ", "");
+        String userEmail = jwtService.extractEmail(token);
+
+        taskService.deleteTask(id, userEmail);
     }
 
     @PutMapping("/{id}")
     public Task updateTask(
             @PathVariable Long id,
-            @Valid @RequestBody UpdateTaskRequest request
+            @Valid @RequestBody UpdateTaskRequest request,
+            @RequestHeader("Authorization") String authHeader
     ) {
-        return taskService.updateTask(id, request);
+
+        String token = authHeader.replace("Bearer ", "");
+        String userEmail = jwtService.extractEmail(token);
+
+        return taskService.updateTask(id, request, userEmail);
     }
 
     @PatchMapping("/{id}/status")
     public Task updateTaskStatus(
             @PathVariable Long id,
-            @Valid @RequestBody UpdateTaskStatusRequest request
+            @Valid @RequestBody UpdateTaskStatusRequest request,
+            @RequestHeader("Authorization") String authHeader
     ) {
-        return taskService.updateTaskStatus(id, request);
+
+        String token = authHeader.replace("Bearer ", "");
+        String userEmail = jwtService.extractEmail(token);
+
+        return taskService.updateTaskStatus(id, request, userEmail);
     }
 }

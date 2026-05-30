@@ -21,7 +21,6 @@ public class TaskService {
     }
 
     public Task createTask(CreateTaskRequest request, String userEmail) {
-
         Task task = new Task();
 
         task.setTitle(request.getTitle());
@@ -44,23 +43,30 @@ public class TaskService {
     }
 
     public Task getTaskById(Long id) {
-
         return taskRepository.findById(id)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Task not found")
                 );
     }
 
-    public void deleteTask(Long id) {
-
+    public Task getUserTaskById(Long id, String userEmail) {
         Task task = getTaskById(id);
+
+        if (!task.getCreatedBy().equals(userEmail)) {
+            throw new RuntimeException("You are not allowed to access this task");
+        }
+
+        return task;
+    }
+
+    public void deleteTask(Long id, String userEmail) {
+        Task task = getUserTaskById(id, userEmail);
 
         taskRepository.delete(task);
     }
 
-    public Task updateTask(Long id, UpdateTaskRequest request) {
-
-        Task task = getTaskById(id);
+    public Task updateTask(Long id, UpdateTaskRequest request, String userEmail) {
+        Task task = getUserTaskById(id, userEmail);
 
         if (request.getTitle() != null) {
             task.setTitle(request.getTitle());
@@ -73,9 +79,8 @@ public class TaskService {
         return taskRepository.save(task);
     }
 
-    public Task updateTaskStatus(Long id, UpdateTaskStatusRequest request) {
-
-        Task task = getTaskById(id);
+    public Task updateTaskStatus(Long id, UpdateTaskStatusRequest request, String userEmail) {
+        Task task = getUserTaskById(id, userEmail);
 
         task.setStatus(request.getStatus());
 
