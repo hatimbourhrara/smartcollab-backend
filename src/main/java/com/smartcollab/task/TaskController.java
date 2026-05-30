@@ -2,6 +2,7 @@ package com.smartcollab.task;
 
 import com.smartcollab.security.JwtService;
 import com.smartcollab.task.dto.CreateTaskRequest;
+import com.smartcollab.task.dto.TaskResponse;
 import com.smartcollab.task.dto.UpdateTaskRequest;
 import com.smartcollab.task.dto.UpdateTaskStatusRequest;
 import com.smartcollab.task.model.Task;
@@ -11,6 +12,7 @@ import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/tasks")
@@ -32,6 +34,7 @@ public class TaskController {
             @Valid @RequestBody CreateTaskRequest request,
             @RequestHeader("Authorization") String authHeader
     ) {
+
         String token = authHeader.replace("Bearer ", "");
         String userEmail = jwtService.extractEmail(token);
 
@@ -44,13 +47,17 @@ public class TaskController {
     }
 
     @GetMapping("/my")
-    public List<Task> getMyTasks(
+    public List<TaskResponse> getMyTasks(
             @RequestHeader("Authorization") String authHeader
     ) {
+
         String token = authHeader.replace("Bearer ", "");
         String userEmail = jwtService.extractEmail(token);
 
-        return taskService.getTasksByCreator(userEmail);
+        return taskService.getTasksByCreator(userEmail)
+                .stream()
+                .map(TaskResponse::new)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/status/{status}")
@@ -59,14 +66,17 @@ public class TaskController {
     }
 
     @GetMapping("/{id}")
-    public Task getTaskById(
+    public TaskResponse getTaskById(
             @PathVariable Long id,
             @RequestHeader("Authorization") String authHeader
     ) {
+
         String token = authHeader.replace("Bearer ", "");
         String userEmail = jwtService.extractEmail(token);
 
-        return taskService.getUserTaskById(id, userEmail);
+        return new TaskResponse(
+                taskService.getUserTaskById(id, userEmail)
+        );
     }
 
     @DeleteMapping("/{id}")
@@ -74,6 +84,7 @@ public class TaskController {
             @PathVariable Long id,
             @RequestHeader("Authorization") String authHeader
     ) {
+
         String token = authHeader.replace("Bearer ", "");
         String userEmail = jwtService.extractEmail(token);
 
@@ -86,6 +97,7 @@ public class TaskController {
             @Valid @RequestBody UpdateTaskRequest request,
             @RequestHeader("Authorization") String authHeader
     ) {
+
         String token = authHeader.replace("Bearer ", "");
         String userEmail = jwtService.extractEmail(token);
 
@@ -98,6 +110,7 @@ public class TaskController {
             @Valid @RequestBody UpdateTaskStatusRequest request,
             @RequestHeader("Authorization") String authHeader
     ) {
+
         String token = authHeader.replace("Bearer ", "");
         String userEmail = jwtService.extractEmail(token);
 
