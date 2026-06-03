@@ -1,5 +1,6 @@
 package com.smartcollab.task.model;
 
+import com.smartcollab.project.model.Project;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -20,6 +21,10 @@ public class Task {
     private TaskStatus status = TaskStatus.TODO;
 
     private String createdBy;
+
+    @ManyToOne
+    @JoinColumn(name = "project_id")
+    private Project project;
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -43,6 +48,10 @@ public class Task {
         return createdBy;
     }
 
+    public Project getProject() {
+        return project;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -61,5 +70,9 @@ public class Task {
 
     public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
     }
 }
