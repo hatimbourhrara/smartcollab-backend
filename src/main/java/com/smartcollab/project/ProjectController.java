@@ -57,4 +57,14 @@ public class ProjectController {
                 .map(ProjectResponse::new)
                 .collect(Collectors.toList());
     }
+
+    @GetMapping("/{id}")
+    public ProjectResponse getProjectById(
+            @PathVariable Long id
+    ) {
+
+        return new ProjectResponse(
+                projectService.getProjectById(id)
+        );
+    }
 }
