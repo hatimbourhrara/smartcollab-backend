@@ -12,6 +12,7 @@ public class TaskResponse {
     private String description;
     private TaskStatus status;
     private String createdBy;
+    private Long projectId;
     private LocalDateTime createdAt;
 
     public TaskResponse(Task task) {
@@ -21,6 +22,10 @@ public class TaskResponse {
         this.status = task.getStatus();
         this.createdBy = task.getCreatedBy();
         this.createdAt = task.getCreatedAt();
+
+        if (task.getProject() != null) {
+            this.projectId = task.getProject().getId();
+        }
     }
 
     public Long getId() {
@@ -41,6 +46,10 @@ public class TaskResponse {
 
     public String getCreatedBy() {
         return createdBy;
+    }
+
+    public Long getProjectId() {
+        return projectId;
     }
 
     public LocalDateTime getCreatedAt() {
