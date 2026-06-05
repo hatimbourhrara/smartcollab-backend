@@ -53,6 +53,13 @@ public class TaskService {
         return taskRepository.findByCreatedBy(userEmail);
     }
 
+    public List<Task> getTasksByProject(Long projectId) {
+
+        Project project = projectService.getProjectById(projectId);
+
+        return taskRepository.findByProject(project);
+    }
+
     public Task getTaskById(Long id) {
         return taskRepository.findById(id)
                 .orElseThrow(() ->
