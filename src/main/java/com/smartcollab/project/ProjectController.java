@@ -5,6 +5,8 @@ import com.smartcollab.project.dto.ProjectResponse;
 import com.smartcollab.project.model.Project;
 import com.smartcollab.project.service.ProjectService;
 import com.smartcollab.security.JwtService;
+import com.smartcollab.task.dto.TaskResponse;
+import com.smartcollab.task.service.TaskService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,13 +18,16 @@ import java.util.stream.Collectors;
 public class ProjectController {
 
     private final ProjectService projectService;
+    private final TaskService taskService;
     private final JwtService jwtService;
 
     public ProjectController(
             ProjectService projectService,
+            TaskService taskService,
             JwtService jwtService
     ) {
         this.projectService = projectService;
+        this.taskService = taskService;
         this.jwtService = jwtService;
     }
 
@@ -66,5 +71,16 @@ public class ProjectController {
         return new ProjectResponse(
                 projectService.getProjectById(id)
         );
+    }
+
+    @GetMapping("/{id}/tasks")
+    public List<TaskResponse> getProjectTasks(
+            @PathVariable Long id
+    ) {
+
+        return taskService.getTasksByProject(id)
+                .stream()
+                .map(TaskResponse::new)
+                .collect(Collectors.toList());
     }
 }
