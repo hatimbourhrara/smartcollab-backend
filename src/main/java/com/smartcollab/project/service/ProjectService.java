@@ -42,4 +42,20 @@ public class ProjectService {
                         new ResourceNotFoundException("Project not found")
                 );
     }
+
+    public Project getUserProjectById(
+            Long id,
+            String userEmail
+    ) {
+
+        Project project = getProjectById(id);
+
+        if (!project.getCreatedBy().equals(userEmail)) {
+            throw new RuntimeException(
+                    "You are not allowed to access this project"
+            );
+        }
+
+        return project;
+    }
 }
