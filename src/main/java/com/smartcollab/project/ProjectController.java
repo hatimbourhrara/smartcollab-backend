@@ -93,4 +93,18 @@ public class ProjectController {
                 .map(TaskResponse::new)
                 .collect(Collectors.toList());
     }
+    @DeleteMapping("/{id}")
+public void deleteProject(
+        @PathVariable Long id,
+        @RequestHeader("Authorization") String authHeader
+) {
+
+    String token = authHeader.replace("Bearer ", "");
+    String userEmail = jwtService.extractEmail(token);
+
+    projectService.deleteProject(
+            id,
+            userEmail
+    );
+}
 }

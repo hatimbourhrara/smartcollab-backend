@@ -58,4 +58,16 @@ public class ProjectService {
 
         return project;
     }
+    public void deleteProject(
+        Long id,
+        String userEmail
+) {
+
+    Project project = getUserProjectById(
+            id,
+            userEmail
+    );
+
+    projectRepository.delete(project);
+}
 }
