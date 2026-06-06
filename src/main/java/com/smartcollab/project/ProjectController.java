@@ -1,61 +1,96 @@
-package com.smartcollab.project.service;
+package com.smartcollab.project;
 
-import com.smartcollab.common.exception.ResourceNotFoundException;
+import com.smartcollab.project.dto.CreateProjectRequest;
+import com.smartcollab.project.dto.ProjectResponse;
 import com.smartcollab.project.model.Project;
-import com.smartcollab.project.repository.ProjectRepository;
-import org.springframework.stereotype.Service;
+import com.smartcollab.project.service.ProjectService;
+import com.smartcollab.security.JwtService;
+import com.smartcollab.task.dto.TaskResponse;
+import com.smartcollab.task.service.TaskService;
+import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-@Service
-public class ProjectService {
+@RestController
+@RequestMapping("/api/projects")
+public class ProjectController {
 
-    private final ProjectRepository projectRepository;
+    private final ProjectService projectService;
+    private final TaskService taskService;
+    private final JwtService jwtService;
 
-    public ProjectService(ProjectRepository projectRepository) {
-        this.projectRepository = projectRepository;
+    public ProjectController(
+            ProjectService projectService,
+            TaskService taskService,
+            JwtService jwtService
+    ) {
+        this.projectService = projectService;
+        this.taskService = taskService;
+        this.jwtService = jwtService;
     }
 
-    public Project createProject(
-            String name,
-            String description,
-            String userEmail
+    @PostMapping
+    public ProjectResponse createProject(
+            @Valid @RequestBody CreateProjectRequest request,
+            @RequestHeader("Authorization") String authHeader
     ) {
 
-        Project project = new Project();
+        String token = authHeader.replace("Bearer ", "");
+        String userEmail = jwtService.extractEmail(token);
 
-        project.setName(name);
-        project.setDescription(description);
-        project.setCreatedBy(userEmail);
+        Project project = projectService.createProject(
+                request.getName(),
+                request.getDescription(),
+                userEmail
+        );
 
-        return projectRepository.save(project);
+        return new ProjectResponse(project);
     }
 
-    public List<Project> getMyProjects(String userEmail) {
-        return projectRepository.findByCreatedBy(userEmail);
-    }
-
-    public Project getProjectById(Long id) {
-
-        return projectRepository.findById(id)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Project not found")
-                );
-    }
-
-    public Project getUserProjectById(
-            Long id,
-            String userEmail
+    @GetMapping("/my")
+    public List<ProjectResponse> getMyProjects(
+            @RequestHeader("Authorization") String authHeader
     ) {
 
-        Project project = getProjectById(id);
+        String token = authHeader.replace("Bearer ", "");
+        String userEmail = jwtService.extractEmail(token);
 
-        if (!project.getCreatedBy().equals(userEmail)) {
-            throw new RuntimeException(
-                    "You are not allowed to access this project"
-            );
-        }
+        return projectService.getMyProjects(userEmail)
+                .stream()
+                .map(ProjectResponse::new)
+                .collect(Collectors.toList());
+    }
 
-        return project;
+    @GetMapping("/{id}")
+    public ProjectResponse getProjectById(
+            @PathVariable Long id,
+            @RequestHeader("Authorization") String authHeader
+    ) {
+
+        String token = authHeader.replace("Bearer ", "");
+        String userEmail = jwtService.extractEmail(token);
+
+        return new ProjectResponse(
+                projectService.getUserProjectById(id, userEmail)
+        );
+    }
+
+    @GetMapping("/{id}/tasks")
+    public List<TaskResponse> getProjectTasks(
+            @PathVariable Long id,
+            @RequestHeader("Authorization") String authHeader
+    ) {
+
+        String token = authHeader.replace("Bearer ", "");
+        String userEmail = jwtService.extractEmail(token);
+
+        projectService.getUserProjectById(id, userEmail);
+
+        return taskService.getTasksByProject(id)
+                .stream()
+                .map(TaskResponse::new)
+                .collect(Collectors.toList());
     }
 }
