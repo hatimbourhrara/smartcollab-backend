@@ -36,7 +36,6 @@ public class ProjectController {
             @Valid @RequestBody CreateProjectRequest request,
             @RequestHeader("Authorization") String authHeader
     ) {
-
         String token = authHeader.replace("Bearer ", "");
         String userEmail = jwtService.extractEmail(token);
 
@@ -53,7 +52,6 @@ public class ProjectController {
     public List<ProjectResponse> getMyProjects(
             @RequestHeader("Authorization") String authHeader
     ) {
-
         String token = authHeader.replace("Bearer ", "");
         String userEmail = jwtService.extractEmail(token);
 
@@ -68,7 +66,6 @@ public class ProjectController {
             @PathVariable Long id,
             @RequestHeader("Authorization") String authHeader
     ) {
-
         String token = authHeader.replace("Bearer ", "");
         String userEmail = jwtService.extractEmail(token);
 
@@ -82,7 +79,6 @@ public class ProjectController {
             @PathVariable Long id,
             @RequestHeader("Authorization") String authHeader
     ) {
-
         String token = authHeader.replace("Bearer ", "");
         String userEmail = jwtService.extractEmail(token);
 
@@ -93,18 +89,15 @@ public class ProjectController {
                 .map(TaskResponse::new)
                 .collect(Collectors.toList());
     }
+
     @DeleteMapping("/{id}")
-public void deleteProject(
-        @PathVariable Long id,
-        @RequestHeader("Authorization") String authHeader
-) {
+    public void deleteProject(
+            @PathVariable Long id,
+            @RequestHeader("Authorization") String authHeader
+    ) {
+        String token = authHeader.replace("Bearer ", "");
+        String userEmail = jwtService.extractEmail(token);
 
-    String token = authHeader.replace("Bearer ", "");
-    String userEmail = jwtService.extractEmail(token);
-
-    projectService.deleteProject(
-            id,
-            userEmail
-    );
-}
+        projectService.deleteProject(id, userEmail);
+    }
 }

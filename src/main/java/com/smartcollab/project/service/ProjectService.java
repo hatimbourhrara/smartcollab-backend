@@ -21,7 +21,6 @@ public class ProjectService {
             String description,
             String userEmail
     ) {
-
         Project project = new Project();
 
         project.setName(name);
@@ -36,7 +35,6 @@ public class ProjectService {
     }
 
     public Project getProjectById(Long id) {
-
         return projectRepository.findById(id)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Project not found")
@@ -47,7 +45,6 @@ public class ProjectService {
             Long id,
             String userEmail
     ) {
-
         Project project = getProjectById(id);
 
         if (!project.getCreatedBy().equals(userEmail)) {
@@ -58,16 +55,13 @@ public class ProjectService {
 
         return project;
     }
+
     public void deleteProject(
-        Long id,
-        String userEmail
-) {
+            Long id,
+            String userEmail
+    ) {
+        Project project = getUserProjectById(id, userEmail);
 
-    Project project = getUserProjectById(
-            id,
-            userEmail
-    );
-
-    projectRepository.delete(project);
-}
+        projectRepository.delete(project);
+    }
 }
