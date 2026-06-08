@@ -2,6 +2,7 @@ package com.smartcollab.project;
 
 import com.smartcollab.project.dto.CreateProjectRequest;
 import com.smartcollab.project.dto.ProjectResponse;
+import com.smartcollab.project.dto.UpdateProjectRequest;
 import com.smartcollab.project.model.Project;
 import com.smartcollab.project.service.ProjectService;
 import com.smartcollab.security.JwtService;
@@ -88,6 +89,24 @@ public class ProjectController {
                 .stream()
                 .map(TaskResponse::new)
                 .collect(Collectors.toList());
+    }
+
+    @PutMapping("/{id}")
+    public ProjectResponse updateProject(
+            @PathVariable Long id,
+            @RequestBody UpdateProjectRequest request,
+            @RequestHeader("Authorization") String authHeader
+    ) {
+        String token = authHeader.replace("Bearer ", "");
+        String userEmail = jwtService.extractEmail(token);
+
+        Project project = projectService.updateProject(
+                id,
+                request,
+                userEmail
+        );
+
+        return new ProjectResponse(project);
     }
 
     @DeleteMapping("/{id}")

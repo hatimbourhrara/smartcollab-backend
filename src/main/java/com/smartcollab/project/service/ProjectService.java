@@ -1,6 +1,7 @@
 package com.smartcollab.project.service;
 
 import com.smartcollab.common.exception.ResourceNotFoundException;
+import com.smartcollab.project.dto.UpdateProjectRequest;
 import com.smartcollab.project.model.Project;
 import com.smartcollab.project.repository.ProjectRepository;
 import org.springframework.stereotype.Service;
@@ -54,6 +55,24 @@ public class ProjectService {
         }
 
         return project;
+    }
+
+    public Project updateProject(
+            Long id,
+            UpdateProjectRequest request,
+            String userEmail
+    ) {
+        Project project = getUserProjectById(id, userEmail);
+
+        if (request.getName() != null) {
+            project.setName(request.getName());
+        }
+
+        if (request.getDescription() != null) {
+            project.setDescription(request.getDescription());
+        }
+
+        return projectRepository.save(project);
     }
 
     public void deleteProject(
