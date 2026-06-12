@@ -2,10 +2,10 @@ package com.smartcollab.project;
 
 import com.smartcollab.project.dto.AddProjectMemberRequest;
 import com.smartcollab.project.dto.CreateProjectRequest;
+import com.smartcollab.project.dto.ProjectMemberResponse;
 import com.smartcollab.project.dto.ProjectResponse;
 import com.smartcollab.project.dto.UpdateProjectRequest;
 import com.smartcollab.project.model.Project;
-import com.smartcollab.project.model.ProjectMember;
 import com.smartcollab.project.service.ProjectMemberService;
 import com.smartcollab.project.service.ProjectService;
 import com.smartcollab.security.JwtService;
@@ -98,7 +98,7 @@ public class ProjectController {
     }
 
     @PostMapping("/{id}/members")
-    public ProjectMember addProjectMember(
+    public ProjectMemberResponse addProjectMember(
             @PathVariable Long id,
             @Valid @RequestBody AddProjectMemberRequest request,
             @RequestHeader("Authorization") String authHeader
@@ -106,22 +106,27 @@ public class ProjectController {
         String token = authHeader.replace("Bearer ", "");
         String ownerEmail = jwtService.extractEmail(token);
 
-        return projectMemberService.addMember(
-                id,
-                request.getUserEmail(),
-                ownerEmail
+        return new ProjectMemberResponse(
+                projectMemberService.addMember(
+                        id,
+                        request.getUserEmail(),
+                        ownerEmail
+                )
         );
     }
 
     @GetMapping("/{id}/members")
-    public List<ProjectMember> getProjectMembers(
+    public List<ProjectMemberResponse> getProjectMembers(
             @PathVariable Long id,
             @RequestHeader("Authorization") String authHeader
     ) {
         String token = authHeader.replace("Bearer ", "");
         String ownerEmail = jwtService.extractEmail(token);
 
-        return projectMemberService.getProjectMembers(id, ownerEmail);
+        return projectMemberService.getProjectMembers(id, ownerEmail)
+                .stream()
+                .map(ProjectMemberResponse::new)
+                .collect(Collectors.toList());
     }
 
     @PutMapping("/{id}")
