@@ -9,4 +9,9 @@ import java.util.List;
 public interface ProjectMemberRepository extends JpaRepository<ProjectMember, Long> {
 
     List<ProjectMember> findByProject(Project project);
+
+    java.util.Optional<ProjectMember> findByIdAndProject(
+            Long id,
+            Project project
+    );
 }
