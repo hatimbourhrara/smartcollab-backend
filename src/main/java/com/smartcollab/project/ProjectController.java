@@ -1,9 +1,12 @@
 package com.smartcollab.project;
 
+import com.smartcollab.project.dto.AddProjectMemberRequest;
 import com.smartcollab.project.dto.CreateProjectRequest;
 import com.smartcollab.project.dto.ProjectResponse;
 import com.smartcollab.project.dto.UpdateProjectRequest;
 import com.smartcollab.project.model.Project;
+import com.smartcollab.project.model.ProjectMember;
+import com.smartcollab.project.service.ProjectMemberService;
 import com.smartcollab.project.service.ProjectService;
 import com.smartcollab.security.JwtService;
 import com.smartcollab.task.dto.TaskResponse;
@@ -19,15 +22,18 @@ import java.util.stream.Collectors;
 public class ProjectController {
 
     private final ProjectService projectService;
+    private final ProjectMemberService projectMemberService;
     private final TaskService taskService;
     private final JwtService jwtService;
 
     public ProjectController(
             ProjectService projectService,
+            ProjectMemberService projectMemberService,
             TaskService taskService,
             JwtService jwtService
     ) {
         this.projectService = projectService;
+        this.projectMemberService = projectMemberService;
         this.taskService = taskService;
         this.jwtService = jwtService;
     }
@@ -89,6 +95,33 @@ public class ProjectController {
                 .stream()
                 .map(TaskResponse::new)
                 .collect(Collectors.toList());
+    }
+
+    @PostMapping("/{id}/members")
+    public ProjectMember addProjectMember(
+            @PathVariable Long id,
+            @Valid @RequestBody AddProjectMemberRequest request,
+            @RequestHeader("Authorization") String authHeader
+    ) {
+        String token = authHeader.replace("Bearer ", "");
+        String ownerEmail = jwtService.extractEmail(token);
+
+        return projectMemberService.addMember(
+                id,
+                request.getUserEmail(),
+                ownerEmail
+        );
+    }
+
+    @GetMapping("/{id}/members")
+    public List<ProjectMember> getProjectMembers(
+            @PathVariable Long id,
+            @RequestHeader("Authorization") String authHeader
+    ) {
+        String token = authHeader.replace("Bearer ", "");
+        String ownerEmail = jwtService.extractEmail(token);
+
+        return projectMemberService.getProjectMembers(id, ownerEmail);
     }
 
     @PutMapping("/{id}")
