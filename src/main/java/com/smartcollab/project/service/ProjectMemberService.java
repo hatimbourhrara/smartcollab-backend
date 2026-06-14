@@ -1,5 +1,6 @@
 package com.smartcollab.project.service;
 
+import com.smartcollab.common.exception.ResourceNotFoundException;
 import com.smartcollab.project.model.Project;
 import com.smartcollab.project.model.ProjectMember;
 import com.smartcollab.project.repository.ProjectMemberRepository;
@@ -26,14 +27,9 @@ public class ProjectMemberService {
             String memberEmail,
             String ownerEmail
     ) {
-
-        Project project = projectService.getUserProjectById(
-                projectId,
-                ownerEmail
-        );
+        Project project = projectService.getUserProjectById(projectId, ownerEmail);
 
         ProjectMember member = new ProjectMember();
-
         member.setUserEmail(memberEmail);
         member.setProject(project);
 
@@ -44,12 +40,24 @@ public class ProjectMemberService {
             Long projectId,
             String ownerEmail
     ) {
-
-        Project project = projectService.getUserProjectById(
-                projectId,
-                ownerEmail
-        );
+        Project project = projectService.getUserProjectById(projectId, ownerEmail);
 
         return projectMemberRepository.findByProject(project);
+    }
+
+    public void removeMember(
+            Long projectId,
+            Long memberId,
+            String ownerEmail
+    ) {
+        Project project = projectService.getUserProjectById(projectId, ownerEmail);
+
+        ProjectMember member = projectMemberRepository
+                .findByIdAndProject(memberId, project)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Project member not found")
+                );
+
+        projectMemberRepository.delete(member);
     }
 }
