@@ -45,4 +45,17 @@ public class CommentService {
 
         return commentRepository.findByTask(task);
     }
+    public void deleteComment(
+        Long commentId,
+        String userEmail
+) {
+
+    Comment comment = commentRepository
+            .findByIdAndCreatedBy(commentId, userEmail)
+            .orElseThrow(() ->
+                    new RuntimeException("Comment not found")
+            );
+
+    commentRepository.delete(comment);
+}
 }
