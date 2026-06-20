@@ -1,5 +1,6 @@
 package com.smartcollab.task.service;
 
+import com.smartcollab.activity.service.ActivityLogService;
 import com.smartcollab.common.exception.ResourceNotFoundException;
 import com.smartcollab.project.model.Project;
 import com.smartcollab.project.service.ProjectService;
@@ -18,13 +19,16 @@ public class TaskService {
 
     private final TaskRepository taskRepository;
     private final ProjectService projectService;
+    private final ActivityLogService activityLogService;
 
     public TaskService(
             TaskRepository taskRepository,
-            ProjectService projectService
+            ProjectService projectService,
+            ActivityLogService activityLogService
     ) {
         this.taskRepository = taskRepository;
         this.projectService = projectService;
+        this.activityLogService = activityLogService;
     }
 
     public Task createTask(CreateTaskRequest request, String userEmail) {
@@ -38,7 +42,14 @@ public class TaskService {
         task.setCreatedBy(userEmail);
         task.setProject(project);
 
-        return taskRepository.save(task);
+        Task savedTask = taskRepository.save(task);
+
+        activityLogService.logActivity(
+                "Created task: " + savedTask.getTitle(),
+                userEmail
+        );
+
+        return savedTask;
     }
 
     public List<Task> getAllTasks() {
@@ -54,9 +65,7 @@ public class TaskService {
     }
 
     public List<Task> getTasksByProject(Long projectId) {
-
         Project project = projectService.getProjectById(projectId);
-
         return taskRepository.findByProject(project);
     }
 
