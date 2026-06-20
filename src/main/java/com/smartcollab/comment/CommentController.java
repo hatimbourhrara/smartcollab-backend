@@ -54,4 +54,18 @@ public class CommentController {
                 .map(CommentResponse::new)
                 .collect(Collectors.toList());
     }
+    @DeleteMapping("/api/comments/{id}")
+public void deleteComment(
+        @PathVariable Long id,
+        @RequestHeader("Authorization") String authHeader
+) {
+
+    String token = authHeader.replace("Bearer ", "");
+    String userEmail = jwtService.extractEmail(token);
+
+    commentService.deleteComment(
+            id,
+            userEmail
+    );
+}
 }
