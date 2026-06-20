@@ -9,4 +9,9 @@ import java.util.List;
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     List<Comment> findByTask(Task task);
+
+    java.util.Optional<Comment> findByIdAndCreatedBy(
+            Long id,
+            String createdBy
+    );
 }
