@@ -1,5 +1,6 @@
 package com.smartcollab.project.service;
 
+import com.smartcollab.activity.service.ActivityLogService;
 import com.smartcollab.common.exception.ResourceNotFoundException;
 import com.smartcollab.project.dto.UpdateProjectRequest;
 import com.smartcollab.project.model.Project;
@@ -12,9 +13,14 @@ import java.util.List;
 public class ProjectService {
 
     private final ProjectRepository projectRepository;
+    private final ActivityLogService activityLogService;
 
-    public ProjectService(ProjectRepository projectRepository) {
+    public ProjectService(
+            ProjectRepository projectRepository,
+            ActivityLogService activityLogService
+    ) {
         this.projectRepository = projectRepository;
+        this.activityLogService = activityLogService;
     }
 
     public Project createProject(
@@ -28,7 +34,14 @@ public class ProjectService {
         project.setDescription(description);
         project.setCreatedBy(userEmail);
 
-        return projectRepository.save(project);
+        Project savedProject = projectRepository.save(project);
+
+        activityLogService.logActivity(
+                "Created project: " + savedProject.getName(),
+                userEmail
+        );
+
+        return savedProject;
     }
 
     public List<Project> getMyProjects(String userEmail) {
@@ -72,7 +85,14 @@ public class ProjectService {
             project.setDescription(request.getDescription());
         }
 
-        return projectRepository.save(project);
+        Project savedProject = projectRepository.save(project);
+
+        activityLogService.logActivity(
+                "Updated project: " + savedProject.getName(),
+                userEmail
+        );
+
+        return savedProject;
     }
 
     public void deleteProject(
@@ -82,5 +102,10 @@ public class ProjectService {
         Project project = getUserProjectById(id, userEmail);
 
         projectRepository.delete(project);
+
+        activityLogService.logActivity(
+                "Deleted project: " + project.getName(),
+                userEmail
+        );
     }
 }
