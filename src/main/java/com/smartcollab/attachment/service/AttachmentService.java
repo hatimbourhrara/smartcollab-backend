@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 
 @Service
@@ -80,5 +81,12 @@ public class AttachmentService {
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Attachment not found")
                 );
+    }
+
+    public Path getAttachmentPath(Long id) {
+
+        Attachment attachment = getAttachmentById(id);
+
+        return Path.of(attachment.getFilePath());
     }
 }
