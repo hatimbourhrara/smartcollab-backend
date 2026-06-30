@@ -84,4 +84,18 @@ public class AttachmentController {
                 .contentType(MediaType.parseMediaType(attachment.getFileType()))
                 .body(resource);
     }
+    @DeleteMapping("/{id}")
+public void deleteAttachment(
+        @PathVariable Long id,
+        @RequestHeader("Authorization") String authHeader
+) {
+
+    String token = authHeader.replace("Bearer ", "");
+    String userEmail = jwtService.extractEmail(token);
+
+    attachmentService.deleteAttachment(
+            id,
+            userEmail
+    );
+}
 }
