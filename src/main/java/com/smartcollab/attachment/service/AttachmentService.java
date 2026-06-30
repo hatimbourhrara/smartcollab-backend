@@ -36,7 +36,6 @@ public class AttachmentService {
             MultipartFile file,
             String userEmail
     ) throws IOException {
-
         Task task = taskService.getTaskById(taskId);
 
         String uploadDir = "uploads";
@@ -69,14 +68,12 @@ public class AttachmentService {
     }
 
     public List<Attachment> getTaskAttachments(Long taskId) {
-
         Task task = taskService.getTaskById(taskId);
 
         return attachmentRepository.findByTask(task);
     }
 
     public Attachment getAttachmentById(Long id) {
-
         return attachmentRepository.findById(id)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Attachment not found")
@@ -84,9 +81,28 @@ public class AttachmentService {
     }
 
     public Path getAttachmentPath(Long id) {
-
         Attachment attachment = getAttachmentById(id);
 
         return Path.of(attachment.getFilePath());
+    }
+
+    public void deleteAttachment(
+            Long id,
+            String userEmail
+    ) {
+        Attachment attachment = getAttachmentById(id);
+
+        File file = new File(attachment.getFilePath());
+
+        if (file.exists()) {
+            file.delete();
+        }
+
+        attachmentRepository.delete(attachment);
+
+        activityLogService.logActivity(
+                "Deleted attachment: " + attachment.getFileName(),
+                userEmail
+        );
     }
 }
