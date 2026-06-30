@@ -22,6 +22,8 @@ public class Task {
 
     private String createdBy;
 
+    private String assignedTo;
+
     @ManyToOne
     @JoinColumn(name = "project_id")
     private Project project;
@@ -48,6 +50,10 @@ public class Task {
         return createdBy;
     }
 
+    public String getAssignedTo() {
+        return assignedTo;
+    }
+
     public Project getProject() {
         return project;
     }
@@ -70,6 +76,10 @@ public class Task {
 
     public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
+    }
+
+    public void setAssignedTo(String assignedTo) {
+        this.assignedTo = assignedTo;
     }
 
     public void setProject(Project project) {
